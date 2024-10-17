@@ -50,11 +50,35 @@ ${product.image}
             Added
           </div>
 
-          <button class="add-to-cart-button button-primary">Add to Cart</button>
+          <button class="add-to-cart-button button-primary js-add-to-cart" data-product-id="${
+            product.id
+          }">Add to Cart</button>
         </div>
 `;
 });
 
 document.querySelector(".js-products-grid").innerHTML = productHtml;
+document.querySelectorAll(".js-add-to-cart").forEach((button) => {
+  button.addEventListener("click", () => {
+    //the dataset gives us all the data attribute attached to the buttons
+    const productId = button.dataset.productId;
+    let matchingItem;
+    cart.forEach((item) => {
+      // this is to check if the product we are adding already exist
+      if (productId === item.productId) {
+        matchingItem = item;
+      }
+    });
+    // if the product already exist increase the quantity
+    if (matchingItem) {
+      matchingItem.quantity = matchingItem.quantity + 1;
+    } else {
+      cart.push({
+        productId: productId,
+        quantity: 1,
+      });
+    }
 
-console.log(productHtml);
+    console.log(cart);
+  });
+});
