@@ -1,6 +1,6 @@
-import { cart } from "../data/cart.js";
+import { cart, addToCart } from "../data/cart.js";
 import { products } from "../data/products.js";
-
+import { formatCurrency } from "./money.js";
 let productHtml = "";
 products.forEach((product) => {
   productHtml =
@@ -27,9 +27,9 @@ ${product.image}
             }</div>
           </div>
 
-          <div class="product-price">$${(product.priceCents / 100).toFixed(
+          <div class="product-price">$${formatCurrency(product.priceCents)}
             2
-          )}</div>
+          </div>
 
           <div class="product-quantity-container">
             <select>
@@ -61,31 +61,20 @@ ${product.image}
 });
 
 document.querySelector(".js-products-grid").innerHTML = productHtml;
+
+function upadteCartQty() {
+  let cartQty = 0;
+  // this will add up all the quantities and save it in the variable above
+  cart.forEach((cartItem) => {
+    cartQty += Number(cartItem.quantity || 0);
+  });
+  document.querySelector(".js-cart-quantity").innerHTML = cartQty;
+}
 document.querySelectorAll(".js-add-to-cart").forEach((button) => {
   button.addEventListener("click", () => {
     //the dataset gives us all the data attribute attached to the buttons
     const productId = button.dataset.productId;
-    let matchingItem;
-    cart.forEach((item) => {
-      // this is to check if the product we are adding already exist
-      if (productId === item.productId) {
-        matchingItem = item;
-      }
-    });
-    // if the product already exist increase the quantity
-    if (matchingItem) {
-      matchingItem.quantity += 1;
-    } else {
-      cart.push({
-        productId: productId,
-        quantity: 1,
-      });
-    }
-    let cartQty = 0;
-    // this will add up all the quantities and save it in the variable above
-    cart.forEach((item) => {
-      cartQty += Number(item.quantity || 0);
-    });
-    document.querySelector(".js-cart-quantity").innerHTML = cartQty;
+    addToCart(productId);
+    upadteCartQty();
   });
 });
